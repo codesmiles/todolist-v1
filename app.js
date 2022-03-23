@@ -39,7 +39,8 @@ app.get('/', (req, res) => {
 app.post(`/`, (req, res) => { 
     const list = req.body.newItem;
     // const item = `<li>${list}</li>`;
-    console.log(list);
+    // console.log(list);
+   
 });
 
 // GET ABOUT ROUTE
