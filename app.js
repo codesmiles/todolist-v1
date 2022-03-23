@@ -6,6 +6,8 @@ const path = require('path');
 
 const app = express();
 
+let items = [  `buy food`, `cook food`, `eat food`];
+
 // Set up view engine middleware for ejs 
 app.set("view engine", "ejs");
 
@@ -32,14 +34,18 @@ app.get('/', (req, res) => {
     let day = date.toLocaleDateString("en-US", options);
 
     // ejs render to views/list.ejs
-    res.render("list", { kindOfDay: day });
+    res.render("list", { kindOfDay: day, newListItems: items });
 });
 
 // POST HOME ROUTE
 app.post(`/`, (req, res) => { 
     const list = req.body.newItem;
-    // const item = `<li>${list}</li>`;
     // console.log(list);
+
+    items.push(list);
+
+    res.redirect(`/`);
+
    
 });
 
