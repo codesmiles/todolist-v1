@@ -2,7 +2,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
-const path = require("path");
 const date = require(__dirname + "/date.js");
 
 
