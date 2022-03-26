@@ -3,6 +3,8 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
 const path = require("path");
+const date = require(__dirname + "/date.js");
+
 
 const app = express();
 
@@ -21,17 +23,7 @@ app.use(express.static(`public`));
 app.get("/", (req, res) => {
   // res.sendFile(path.join(__dirname, 'index.html'));
 
-  const date = new Date();
-  const getday = date.getDay();
-
-  // date method to get the day of the week cleanly
-  let options = {
-    weekday: `long`,
-    day: `numeric`,
-    month: `long`,
-  };
-
-  let day = date.toLocaleDateString("en-US", options);
+    let day = date();
 
   // ejs render to views/list.ejs
   res.render("list", { listTitle: day, newListItems: items });
