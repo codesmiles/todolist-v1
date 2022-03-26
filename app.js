@@ -55,8 +55,8 @@ app.get(`/work`, (req, res) => {
   res.render(`list`, { listTitle: `Work List`, newListItems: workItems });
 });
 
-app.post`/work`,
-  (req, res) => {
+// POST WORK ROUTE
+app.post`/work`, (req, res) => {
     const items = req.body.newItem;
     // console.log(list);
 
@@ -64,6 +64,13 @@ app.post`/work`,
 
     res.redirect(`/work`);
   };
+
+
+//   GET ABOUT ROUTE
+app.get(`/about`, (req, res) => { 
+    res.render(`about`);
+});
+
 
 app.listen(8000, () => {
   console.log(`app is listening at port 8000`);
