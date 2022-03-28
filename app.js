@@ -8,6 +8,7 @@ const app = express();
 
 const items = [`buy food`, `cook food`, `eat food`];
 const workItems = [];
+
 // Set up view engine middleware for ejs
 app.set("view engine", "ejs");
 
