@@ -4,7 +4,6 @@ const bodyParser = require("body-parser");
 const ejs = require("ejs");
 const date = require(__dirname + "/date.js");
 
-
 const app = express();
 
 const items = [`buy food`, `cook food`, `eat food`];
@@ -22,7 +21,7 @@ app.use(express.static(`public`));
 app.get("/", (req, res) => {
   // res.sendFile(path.join(__dirname, 'index.html'));
 
-    let day = date();
+  let day = date();
 
   // ejs render to views/list.ejs
   res.render("list", { listTitle: day, newListItems: items });
@@ -31,13 +30,18 @@ app.get("/", (req, res) => {
 // POST HOME ROUTE
 app.post(`/`, (req, res) => {
   const list = req.body.newItem;
-
-  if (req.body.list === `Work List`) {
-    workItems.push(list);
-    res.redirect(`/work`);
+  // to check if the input tag is empty
+  if (list === "") {
+    res.redirect("/");
   } else {
-    items.push(list);
-    res.redirect(`/`);
+    
+    if (req.body.list === `Work List`) {
+      workItems.push(list);
+      res.redirect(`/work`);
+    } else {
+      items.push(list);
+      res.redirect(`/`);
+    }
   }
 });
 
@@ -47,7 +51,8 @@ app.get(`/work`, (req, res) => {
 });
 
 // POST WORK ROUTE
-app.post`/work`, (req, res) => {
+app.post`/work`,
+  (req, res) => {
     const items = req.body.newItem;
     // console.log(list);
 
@@ -56,10 +61,9 @@ app.post`/work`, (req, res) => {
     res.redirect(`/work`);
   };
 
-
 //   GET ABOUT ROUTE
-app.get(`/about`, (req, res) => { 
-    res.render(`about`);
+app.get(`/about`, (req, res) => {
+  res.render(`about`);
 });
 
 const port = process.env.PORT || 8000;
