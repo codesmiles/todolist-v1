@@ -55,22 +55,27 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // (middleware) to be able to access your static files in public folder
 app.use(express.static(`public`));
 
+// get date
+
+let day = date();
 // GET HOME ROUTE
 app.get("/", (req, res) => {
   // to check if items exists in the database
   Item.find({}, (err, foundItems) => {
-    if (foundItems.length === 0) {
-      Item.insertMany(defaultItems, function (err) {
-        err
-          ? console.log(`error ${err}`)
-          : console.log("successfully added items to the database");
-      });
-      res.redirect("/");
-    } else {
-      // ejs render to views/list.ejs
-      let day = date();
-      res.render("list", { listTitle: day, newListItems: foundItems });
-      // mongoose.connection.close();
+    if (!err) {
+      if (foundItems.length === 0) {
+        Item.insertMany(defaultItems, function (err) {
+          err
+            ? console.log(`error ${err}`)
+            : console.log("successfully added items to the database");
+        });
+        res.redirect("/");
+      } else {
+        // ejs render to views/list.ejs
+
+        res.render("list", { listTitle: day, newListItems: foundItems });
+        // mongoose.connection.close();
+      }
     }
   });
 });
@@ -90,6 +95,7 @@ app.get(`/:customListName`, (req, res) => {
         });
 
         list.save();
+        res.redirect(`/${listParameter}`);
       } else {
         // show the existing list
         res.render(`list`, {
@@ -119,29 +125,45 @@ app.post(`/`, (req, res) => {
 // delete item from the list
 app.post(`/delete`, (req, res) => {
   const checkedItemId = req.body.checkbox;
-  Item.findByIdAndRemove(checkedItemId, function (err) {
-    err
-      ? console.log(`error ${err}`)
-      : console.log("successfully deleted an item");
-  });
-  res.redirect("/");
+  const listName = req.body.listName;
+
+  // to check if the listname
+  if (listName === date) {
+    Item.findByIdAndRemove(checkedItemId, function (err) {
+      if (!err) {
+        console.log("successfully deleted an item");
+        res.redirect("/delete");
+      }
+    });
+  } else {
+    // in order to delete an item from a dynamic route list
+    Item.findOneAndUpdate(
+      { name: listName },
+      { $pull: { items: { _id: checkedItemId } } },
+      (err, foundList) => {
+        if (!err) {
+          res.redirect(`/${listName}`);
+        }
+      }
+    );
+  }
 });
 
 // POST WORK ROUTE
-app.post`/work`,
-  (req, res) => {
-    const items = req.body.newItem;
-    // console.log(list);
+// app.post`/work`,
+//   (req, res) => {
+//     const items = req.body.newItem;
+//     // console.log(list);
 
-    // workItems.push(items);
+//     // workItems.push(items);
 
-    res.redirect(`/work`);
-  };
+//     res.redirect(`/work`);
+//   };
 
 //   GET ABOUT ROUTE
-app.get(`/about`, (req, res) => {
-  res.render(`about`);
-});
+// app.get(`/about`, (req, res) => {
+//   res.render(`about`);
+// });
 
 const port = process.env.PORT || 8000;
 app.listen(port, () => {
