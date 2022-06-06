@@ -2,6 +2,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
+const _ = require("lodash");
 const date = require(__dirname + "/date.js");
 const app = express();
 
@@ -46,18 +47,16 @@ const listSchema = {
 const List = mongoose.model("List", listSchema);
 
 // -------------------------------------------------------------
-// Set up view engine middleware for ejs
+// view engine for ejs
 app.set("view engine", "ejs");
 
-// middleware to use bodyParser
-app.use(bodyParser.urlencoded({ extended: true }));
-
-// (middleware) to be able to access your static files in public folder
-app.use(express.static(`public`));
+// middleware
+app.use(bodyParser.urlencoded({ extended: true })); // to use bodyParser
+app.use(express.static(`public`)); //access your static files in public folder
 
 // get date
-
 let day = date();
+
 // GET HOME ROUTE
 app.get("/", (req, res) => {
   // to check if items exists in the database
@@ -65,14 +64,15 @@ app.get("/", (req, res) => {
     if (!err) {
       if (foundItems.length === 0) {
         Item.insertMany(defaultItems, function (err) {
-          err
-            ? console.log(`error ${err}`)
-            : console.log("successfully added items to the database");
+          if (err) {
+            console.log(`error ${err}`);
+          } else {
+            console.log("successfully added items to the database");
+          }
         });
         res.redirect("/");
       } else {
         // ejs render to views/list.ejs
-
         res.render("list", { listTitle: day, newListItems: foundItems });
         // mongoose.connection.close();
       }
@@ -127,20 +127,19 @@ app.post(`/delete`, (req, res) => {
   const checkedItemId = req.body.checkbox;
   const listName = req.body.listName;
 
-  // to check if the listname
-  if (listName === date) {
-    Item.findByIdAndRemove(checkedItemId, function (err) {
+  if (listName === day) {
+    Item.findByIdAndRemove(checkedItemId, (err) => {
       if (!err) {
-        console.log("successfully deleted an item");
-        res.redirect("/delete");
+        console.log(`successfully deleted item`);
+        res.redirect("/");
       }
     });
   } else {
     // in order to delete an item from a dynamic route list
     Item.findOneAndUpdate(
       { name: listName },
-      { $pull: { items: { _id: checkedItemId } } },
-      (err, foundList) => {
+      { $pull: { items: { items: { _id: checkedItemId } } } },
+      (err, foundItem) => {
         if (!err) {
           res.redirect(`/${listName}`);
         }
@@ -148,6 +147,18 @@ app.post(`/delete`, (req, res) => {
     );
   }
 });
+
+// to check if the listname
+// Item.findByIdAndRemove(checkedItemId, function (err) {
+//   if (!err) {
+//     console.log("successfully deleted an item");
+//     res.redirect("/delete");
+//   }
+// });
+// else {
+
+// }
+// );
 
 // POST WORK ROUTE
 // app.post`/work`,
