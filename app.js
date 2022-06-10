@@ -52,7 +52,7 @@ app.set("view engine", "ejs");
 
 // middleware
 app.use(bodyParser.urlencoded({ extended: true })); // to use bodyParser
-app.use(express.static(`public`)); //access your static files in public folder
+app.use(express.static(`public`)); //access your static files in public folder 
 
 // get date
 let day = date();
@@ -82,7 +82,7 @@ app.get("/", (req, res) => {
 
 // GET DYNAMIC ROUTES
 app.get(`/:customListName`, (req, res) => {
-  const listParameter = req.params.customListName;
+  const listParameter = _.capitalize(req.params.customListName);
 
   // find if a list already exists in the database
   List.findOne({ name: listParameter }, (err, foundList) => {
