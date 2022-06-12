@@ -180,3 +180,6 @@ const port = process.env.PORT || 8000;
 app.listen(port, () => {
   console.log(`app is listening at port 8000`);
 });
+
+// mongo atlas usename && password
+// codesmiles  ||  z6k3x5v165tbr3Cs
